@@ -1,0 +1,17 @@
+# Based on service described at:
+#     https://fedoramagazine.org/automate-backups-with-restic-and-systemd/
+#
+
+[Unit]
+Description=Restic backup service (data pruning)
+After=restic-backup.service
+OnFailure=restic-notify-failure@%i.service
+
+[Service]
+Type=oneshot
+
+EnvironmentFile=%E/restic-backup/restic.conf
+
+ExecStartPre=-/usr/sbin/restic-backup-helper unlock
+ExecStart=/usr/sbin/restic-backup-helper prune
+

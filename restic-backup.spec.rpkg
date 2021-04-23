@@ -1,0 +1,60 @@
+Name:           {{{ git_dir_name }}}
+Version:        {{{ git_dir_version lead=0 }}}
+Release:        1%{?dist}
+BuildArch:      noarch
+
+Summary:        Systemd configuration for restic-based backups
+License:        MIT
+
+URL:            https://github.com/chrisbouchard/restic-backup
+VCS:            {{{ git_dir_vcs }}}
+
+Source:         {{{ git_dir_pack }}}
+
+BuildRequires:  systemd-rpm-macros
+
+Requires:       restic
+Requires:       ruby >= 3
+Requires:       rubygem(colorize)
+Requires:       systemd
+
+
+%description
+This package contains configuration for Systemd to run nightly backups using
+restic.
+
+
+%prep
+{{{ git_dir_setup_macro }}}
+
+
+%install
+# Install helper scripts.
+install --mode=755 --directory %{buildroot}%{_sbindir}
+install --mode=755 --target-directory=%{buildroot}%{_sbindir} bin/*
+
+# Install service and timer units.
+install --mode=755 --directory %{buildroot}%{_userunitdir}
+install --mode=644 --target-directory=%{buildroot}%{_userunitdir} systemd/*
+
+
+%post
+%systemd_user_post restic-backup.timer
+%systemd_user_post restic-prune.timer
+
+
+%preun
+%systemd_user_preun restic-backup.timer
+%systemd_user_preun restic-prune.timer
+
+
+%files
+%license LICENSE
+%{_sbindir}/*
+%{_userunitdir}/*
+
+
+%changelog
+{{{ git_dir_changelog }}}
+
+# vim: syntax=spec

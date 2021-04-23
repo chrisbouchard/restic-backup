@@ -1,0 +1,82 @@
+#!/usr/bin/env ruby
+
+require 'colorize'
+
+def String.split_path(sep=':')
+  split(sep).reject(&:empty?)
+end
+
+class ResticOps
+  def backup()
+    # Required. Raise KeyError if not defined.
+    paths = ENV.fetch('BACKUP_PATHS').split_path
+
+    # Optional. The default value will be split to an empty list and the option
+    # will be left out.
+    exclude_files = ENV.fetch('BACKUP_EXCLUDE_FILES', '').split_path
+    exclude_if_present = ENV.fetch('BACKUP_EXCLUDE_IF_PRESENT', '').split_path
+
+    restic 'backup',
+      '--one-file-system',
+      '--tag=systemd.timer',
+      '--verbose',
+      *exclude_files.map { |file| "--exclude-file=#{file}" },
+      *exclude_if_present.map { |file| "--exclude-if-present=#{file}" },
+      *paths
+  end
+
+  # Forget backups that have expired. This won't delete anything yet. That is
+  # handled by #prune.
+  def forget()
+    retentions = {
+      # Optonal. When we compact, nil entries will be removed.
+      daily: ENV['FORGET_KEEP_DAILY'],
+      weekly: ENV['FORGET_KEEP_WEEKLY'],
+      monthly: ENV['FORGET_KEEP_MONTHLY'],
+      yearly: ENV['FORGET_KEEP_YEARLY'],
+    }
+
+    retentions.compact!
+
+    restic 'forget',
+      '--group-by=paths,tags',
+      '--tag=systemd.timer',
+      '--verbose',
+      *retentions.map { |period, value| "--keep-#{period}=#{value}" }
+  end
+
+  def mount()
+    # Required. Raise KeyError if not defined.
+    path = ENV.fetch('MOUNT_PATH')
+    restic 'mount', path
+  end
+
+  # Delete data that is no longer necessary (e.g., because the backup has been
+  # forgotten).
+  def prune()
+    restic 'prune'
+  end
+
+  # Remove any stale locks. Note, this doesn't clear any active locks held by
+  # live processes, so we won't interrupt an already-running backup. If this
+  # fails for some reason, we should still try to do the backup.
+  def unlock()
+    restic 'unlock'
+  end
+
+  private
+
+  def restic(op, *args)
+    # Log the command for reference
+    puts "restic #{op}".green
+
+    # Log lines are cheap -- always run verbosely.
+    exec 'restic', op, '--verbose', *args
+  end
+end
+
+
+action = ARGV[0]
+ops = ResticOps.new
+ops.send action
+

@@ -1,0 +1,13 @@
+[Unit]
+Description=Restic mount service
+
+[Service]
+Type=exec
+
+EnvironmentFile=%E/restic-backup/restic.conf
+
+Environment=MOUNT_PATH=%h/Restic
+
+ExecStartPre=-/usr/sbin/restic-backup-helper unlock
+ExecStart=/usr/sbin/restic-backup-helper mount
+
