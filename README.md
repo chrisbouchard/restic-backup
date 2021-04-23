@@ -8,7 +8,7 @@ Systemd configuration for a backups using Restic
 ## Installation
 
 This package is available from the
-[upliftinglemma-project][chrisbouchard/upliftinglemma] Copr. Assuming you're
+[chrisbouchard/upliftinglemma][upliftinglemma-project] Copr. Assuming you're
 using a recent version of Fedora, you can install using `dnf`.
 
 ```console
