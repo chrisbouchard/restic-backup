@@ -13,6 +13,7 @@ Source:         {{{ git_dir_pack }}}
 
 BuildRequires:  systemd-rpm-macros
 
+Requires:       libnotify
 Requires:       restic
 Requires:       ruby >= 3
 Requires:       rubygem(colorize)
