@@ -1,6 +1,6 @@
 # Namespaced WireGuard VPN
 
-[![Copr build status][copr-status-image]][copr-restic-backup-package]
+[![Copr build status][copr-status-img]][copr-restic-backup-package]
 
 Systemd configuration for a backups using Restic
 
