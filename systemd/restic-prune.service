@@ -10,7 +10,7 @@ OnFailure=restic-notify-failure@%i.service
 [Service]
 Type=oneshot
 
-EnvironmentFile=%E/restic-backup/restic.conf
+EnvironmentFile=%E/restic-backup/restic-backup.conf
 
 ExecStartPre=-/usr/sbin/restic-backup-helper unlock
 ExecStart=/usr/sbin/restic-backup-helper prune

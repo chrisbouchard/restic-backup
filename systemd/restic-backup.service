@@ -9,17 +9,11 @@ OnFailure=restic-notify-failure@%i.service
 [Service]
 Type=oneshot
 
-EnvironmentFile=%E/restic-backup/restic.conf
+EnvironmentFile=%E/restic-backup/restic-backup.conf
 
 Environment=BACKUP_EXCLUDE_FILES=%E/restic-backup/exclude
 Environment=BACKUP_EXCLUDE_IF_PRESENT=.restic_exclude
 Environment=BACKUP_PATHS=%h
-
-# TODO: Move to local config and delete?
-Environment=FORGET_KEEP_DAILY=7
-Environment=FORGET_KEEP_WEEKLY=4
-Environment=FORGET_KEEP_MONTHLY=6
-Environment=FORGET_KEEP_YEARLY=3
 
 ExecStartPre=-/usr/sbin/restic-backup-helper unlock
 ExecStart=/usr/sbin/restic-backup-helper backup

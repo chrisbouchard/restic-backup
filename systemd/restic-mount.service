@@ -4,7 +4,7 @@ Description=Restic mount service
 [Service]
 Type=exec
 
-EnvironmentFile=%E/restic-backup/restic.conf
+EnvironmentFile=%E/restic-backup/restic-backup.conf
 
 Environment=MOUNT_PATH=%h/Restic
 
