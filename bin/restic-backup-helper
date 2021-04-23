@@ -2,8 +2,10 @@
 
 require 'colorize'
 
-def String.split_path(sep=':')
-  split(sep).reject(&:empty?)
+class String
+  def split_path(sep=':')
+    split(sep).reject(&:empty?)
+  end
 end
 
 class ResticOps
