@@ -18,10 +18,13 @@ class ResticOps
     exclude_files = ENV.fetch('BACKUP_EXCLUDE_FILES', '').split_path
     exclude_if_present = ENV.fetch('BACKUP_EXCLUDE_IF_PRESENT', '').split_path
 
+    # Optional
+    verbosity = ENV.fetch('BACKUP_VERBOSE', 0)
+
     restic 'backup',
       '--one-file-system',
       '--tag=systemd.timer',
-      '--verbose',
+      "--verbose=#{verbosity}",
       *exclude_files.map { |file| "--exclude-file=#{file}" },
       *exclude_if_present.map { |file| "--exclude-if-present=#{file}" },
       *paths
@@ -40,30 +43,43 @@ class ResticOps
 
     retentions.compact!
 
+    # Optional
+    verbosity = ENV.fetch('FORGET_VERBOSE', 0)
+
     restic 'forget',
       '--group-by=paths,tags',
       '--tag=systemd.timer',
-      '--verbose',
+      "--verbose=#{verbosity}",
       *retentions.map { |period, value| "--keep-#{period}=#{value}" }
   end
 
   def mount()
     # Required. Raise KeyError if not defined.
     path = ENV.fetch('MOUNT_PATH')
-    restic 'mount', path
+
+    # Optional
+    verbosity = ENV.fetch('MOUNT_VERBOSE', 0)
+
+    restic 'mount', "--verbose=#{verbosity}", path
   end
 
   # Delete data that is no longer necessary (e.g., because the backup has been
   # forgotten).
   def prune()
-    restic 'prune'
+    # Optional
+    verbosity = ENV.fetch('PRUNE_VERBOSE', 0)
+
+    restic 'prune', "--verbose=#{verbosity}"
   end
 
   # Remove any stale locks. Note, this doesn't clear any active locks held by
   # live processes, so we won't interrupt an already-running backup. If this
   # fails for some reason, we should still try to do the backup.
   def unlock()
-    restic 'unlock'
+    # Optional
+    verbosity = ENV.fetch('UNLOCK_VERBOSE', 0)
+
+    restic 'unlock', "--verbose=#{verbosity}"
   end
 
   private
@@ -73,8 +89,7 @@ class ResticOps
     puts  "#{'>>>'.green} Running restic #{op}..."
     puts
 
-    # Log lines are cheap -- always run verbosely.
-    system 'restic', op, '--verbose', *args
+    system 'restic', op, *args
     status = $?
 
     puts
