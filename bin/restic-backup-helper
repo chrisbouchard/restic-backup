@@ -70,15 +70,29 @@ class ResticOps
 
   def restic(op, *args)
     # Log the command for reference
-    puts "restic #{op}".green
+    puts  "#{'>>>'.green} Running restic #{op}..."
+    puts
 
     # Log lines are cheap -- always run verbosely.
-    exec 'restic', op, '--verbose', *args
+    system 'restic', op, '--verbose', *args
+    status = $?
+
+    puts
+
+    if status.success? then
+      puts "#{'>>>'.green} Success"
+    else
+      puts "#{'>>>'.red} Error: Exit status #{status.exitstatus}"
+    end
+
+    return status.exitstatus
   end
 end
 
 
 action = ARGV[0]
 ops = ResticOps.new
-ops.send action
+exit_status = ops.send action
+
+exit exit_status
 
