@@ -1,4 +1,4 @@
-# Namespaced WireGuard VPN
+# Restic Backup
 
 [![Copr build status][copr-status-img]][copr-restic-backup-package]
 
