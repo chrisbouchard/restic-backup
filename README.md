@@ -4,6 +4,10 @@
 
 Systemd configuration for a backups using Restic.
 
+These backup services are based on the ones described in [_Automate backups
+with restic and systemd_ in Fedora Magazine][automate-backups], but modified to
+fit my setup.
+
 
 ## Installation
 
@@ -129,6 +133,7 @@ file][environmentfile=], which by default is
   - Default: `0`
 
 
+[automate-backups]: https://fedoramagazine.org/automate-backups-with-restic-and-systemd/
 [copr-restic-backup-package]: https://copr.fedorainfracloud.org/coprs/chrisbouchard/upliftinglemma/package/restic-backup/
 [copr-status-img]: https://copr.fedorainfracloud.org/coprs/chrisbouchard/upliftinglemma/package/restic-backup/status_image/last_build.png
 [environmentfile=]: https://www.freedesktop.org/software/systemd/man/systemd.exec.html#EnvironmentFile=
